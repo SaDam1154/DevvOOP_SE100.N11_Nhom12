@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 const read = async (req, res, next) => {
     try {
         let products;
-        products = await Product.find();
+        products = await Product.find().populate('type');
         return res.status(200).json({ success: true, products });
     } catch (err) {
         console.log(err);

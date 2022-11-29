@@ -16,7 +16,8 @@ const ProductSchema = new Schema(
             type: Number,
         },
         type: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: 'product_types',
         },
     },
     {
