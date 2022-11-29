@@ -1,11 +1,15 @@
+const QueryString = require('qs');
 const Product = require('../models/Product');
 const imageToolkit = require('../utils/imageToolkit');
 
 // [GET] api/product
 const read = async (req, res, next) => {
+
+    const query = QueryString.parse(req.query)
+
     try {
         let products;
-        products = await Product.find().populate('type');
+        products = await Product.find(query.filters).populate('type');
         return res.status(200).json({ success: true, products });
     } catch (err) {
         console.log(err);
@@ -67,7 +71,6 @@ const update = async (req, res, next) => {
     const id = Number(req.params.id);
     const bodyObj = req.body;
     const updateObj = {};
-    console.log(bodyObj);
 
     Object.keys(bodyObj).forEach((key) => {
         if (bodyObj[key] !== undefined) {
