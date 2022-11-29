@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/SaDam1154/SE100.N11_Nhom12_BE#readme",
   "dependencies": {
+    "cloudinary": "^1.32.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongoose": "^6.7.3",
