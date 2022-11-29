@@ -40,7 +40,7 @@ const readOne = async (req, res, next) => {
     const id = req.params.id;
     try {
         let product;
-        product = await Product.findOne({id});
+        product = await Product.findOne({id}).populate('type');
         return res.status(200).json({ success: true, product });
     } catch (err) {
         console.log(err);
