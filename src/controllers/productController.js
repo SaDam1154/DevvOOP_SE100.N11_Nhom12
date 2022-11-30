@@ -104,5 +104,21 @@ const update = async (req, res, next) => {
     }
 };
 
-module.exports = { read, create, readOne, update };
+// [DELETE] api/product/:id
+const destroy = async (req, res, next) => {
+
+    if (!req.params.id) {
+        return res.status(400).json({ success: false, status: 400, message: 'Missed id' });
+    }
+
+    try {
+        await Product.delete({id: req.params.id});
+        return res.status(200).json({ success: true });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+    }
+};
+
+module.exports = { read, create, readOne, update, destroy };
  
