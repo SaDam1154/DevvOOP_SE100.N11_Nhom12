@@ -8,7 +8,9 @@ const read = async (req, res, next) => {
         return res.status(200).json({ success: true, productTypes });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -23,13 +25,15 @@ const create = async (req, res, next) => {
 
     try {
         const newProductType = new ProductType({
-            name
+            name,
         });
         await newProductType.save();
         return res.status(201).json({ success: true, productType: newProductType });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -38,23 +42,23 @@ const readOne = async (req, res, next) => {
     const id = req.params.id;
     try {
         let productType;
-        productType = await ProductType.findOne({id});
+        productType = await ProductType.findOne({ id });
         return res.status(200).json({ success: true, productType });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
-
 
 // [PUT] api/product-type/:id
 const update = async (req, res, next) => {
     const id = Number(req.params.id);
     const bodyObj = req.body;
     const updateObj = {};
-    console.log(bodyObj)
 
-    Object.keys(bodyObj).forEach(key => {
+    Object.keys(bodyObj).forEach((key) => {
         if (bodyObj[key] !== undefined) {
             updateObj[key] = bodyObj[key];
         }
@@ -62,29 +66,32 @@ const update = async (req, res, next) => {
 
     // Update productType
     try {
-        const newProductType = await ProductType.findOneAndUpdate({id}, updateObj, {
+        const newProductType = await ProductType.findOneAndUpdate({ id }, updateObj, {
             new: true,
-        })
+        });
         return res.status(200).json({ success: true, productType: newProductType });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
 // [DELETE] api/product-type/:id
 const destroy = async (req, res, next) => {
-
     if (!req.params.id) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed id' });
     }
 
     try {
-        await ProductType.delete({id: req.params.id});
+        await ProductType.delete({ id: req.params.id });
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
