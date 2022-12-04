@@ -2,13 +2,18 @@ const Customer = require('../models/Customer');
 
 // [GET] api/customer
 const read = async (req, res, next) => {
+    const query = req.query;
+    const queryObj = JSON.parse(query.q);
+
     try {
         let customers;
-        customers = await Customer.find();
+        customers = await Customer.aggregate([{ $match: queryObj.filters || {} }]);
         return res.status(200).json({ success: true, customers });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -27,7 +32,9 @@ const create = async (req, res, next) => {
         return res.status(201).json({ success: true, customer: newCustomer });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -40,7 +47,9 @@ const readOne = async (req, res, next) => {
         return res.status(200).json({ success: true, customer });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -65,7 +74,9 @@ const update = async (req, res, next) => {
         return res.status(200).json({ success: true, customer: newCustomer });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -80,7 +91,9 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+        return res
+            .status(500)
+            .json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
