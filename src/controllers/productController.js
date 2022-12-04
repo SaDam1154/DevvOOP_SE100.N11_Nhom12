@@ -5,7 +5,7 @@ const imageToolkit = require('../utils/imageToolkit');
 // [GET] api/product
 const read = async (req, res, next) => {
     const query = req.query;
-    const queryObj = JSON.parse(query.q);
+    const queryObj = query.q ? JSON.parse(query.q) : {};
 
     try {
         let products;
