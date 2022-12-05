@@ -34,7 +34,7 @@ const read = async (req, res, next) => {
 
 // [POST] api/product
 const create = async (req, res, next) => {
-    const { name, price, type, image } = req.body;
+    const { name, price, type, quantity, image } = req.body;
     // Validate field
     if (!name || !price || !type) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
@@ -62,6 +62,7 @@ const create = async (req, res, next) => {
             name,
             price,
             type,
+            quantity,
             image: image && imageResult.secure_url,
         });
         await newProduct.save();
