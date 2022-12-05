@@ -1,5 +1,6 @@
 const express = require('express');
-var queryType = require('query-types');
+const parseFilters = require('./middleware/parseFilters');
+const parseSorts = require('./middleware/parseSorts');
 require('dotenv').config();
 const corsConfig = require('./configs/cors');
 const connectDB = require('./configs/db');
@@ -13,7 +14,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 app.use(corsConfig);
 
-// app.use(queryType.middleware());
+app.use(parseFilters, parseSorts);
 
 // route
 app.use('/api', route);

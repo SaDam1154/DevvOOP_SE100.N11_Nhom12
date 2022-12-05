@@ -6,7 +6,7 @@ const Order = require('../models/Order');
 const read = async (req, res, next) => {
     try {
         let orders;
-        orders = await Order.find();
+        orders = await Order.aggregate([{ $match: req.filters }, { $sort: req.sorts }]);
         return res.status(200).json({ success: true, orders });
     } catch (err) {
         console.log(err);

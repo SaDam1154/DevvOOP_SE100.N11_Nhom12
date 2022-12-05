@@ -4,9 +4,6 @@ const imageToolkit = require('../utils/imageToolkit');
 
 // [GET] api/product
 const read = async (req, res, next) => {
-    const query = req.query;
-    const queryObj = query.q ? JSON.parse(query.q) : {};
-
     try {
         let products;
         products = await Product.aggregate([
@@ -21,7 +18,8 @@ const read = async (req, res, next) => {
             {
                 $unwind: '$type',
             },
-            { $match: queryObj.filters || {} },
+            { $match: req.filters },
+            { $sort: req.sorts },
         ]);
         return res.status(200).json({ success: true, products });
     } catch (err) {

@@ -2,15 +2,10 @@ const Customer = require('../models/Customer');
 
 // [GET] api/customer
 const read = async (req, res, next) => {
-    const query = req.query;
-    const queryObj = query.q ? JSON.parse(query.q) : {};
-
+    console.log(req.filters);
     try {
         let customers;
-        customers = await Customer.aggregate([
-            { $match: queryObj.filters || {} },
-            { $sort: queryObj.sorts || { id: 1 } },
-        ]);
+        customers = await Customer.aggregate([{ $match: req.filters }, { $sort: req.sorts }]);
         return res.status(200).json({ success: true, customers });
     } catch (err) {
         console.log(err);
