@@ -24,9 +24,7 @@ const read = async (req, res, next) => {
         return res.status(200).json({ success: true, products });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -44,14 +42,10 @@ const create = async (req, res, next) => {
         try {
             imageResult = await imageToolkit.upload(image);
             if (!imageResult) {
-                return res
-                    .status(500)
-                    .json({ success: false, status: 500, message: 'Internal server error' });
+                return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
             }
         } catch (err) {
-            return res
-                .status(500)
-                .json({ success: false, status: 500, message: 'Internal server error' });
+            return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
         }
     }
 
@@ -67,9 +61,7 @@ const create = async (req, res, next) => {
         return res.status(201).json({ success: true, product: newProduct });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -82,9 +74,7 @@ const readOne = async (req, res, next) => {
         return res.status(200).json({ success: true, product });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -104,16 +94,14 @@ const update = async (req, res, next) => {
     if (updateObj.image) {
         let imageResult;
         try {
-            imageResult = await imageToolkit.upload(image);
+            imageResult = await imageToolkit.upload(updateObj.image);
             if (!imageResult) {
-                return res
-                    .status(500)
-                    .json({ success: false, status: 500, message: 'Internal server error' });
+                console.log(err);
+                return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
             }
         } catch (err) {
-            return res
-                .status(500)
-                .json({ success: false, status: 500, message: 'Internal server error' });
+            console.log(err);
+            return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
         }
         updateObj.image = imageResult.secure_url || 'https://picsum.photos/200/300';
     }
@@ -126,9 +114,7 @@ const update = async (req, res, next) => {
         return res.status(200).json({ success: true, product: newProduct });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -143,9 +129,7 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 

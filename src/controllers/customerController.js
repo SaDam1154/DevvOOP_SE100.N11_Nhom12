@@ -2,7 +2,6 @@ const Customer = require('../models/Customer');
 
 // [GET] api/customer
 const read = async (req, res, next) => {
-    console.log(req.filters);
     try {
         let customers;
         customers = await Customer.aggregate([{ $match: req.filters }, { $sort: req.sorts }]);
