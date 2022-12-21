@@ -10,9 +10,7 @@ const read = async (req, res, next) => {
         return res.status(200).json({ success: true, orders });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -48,10 +46,10 @@ const createDetail = ({ orderObject, detailObjs }) => {
 
 // [POST] api/order
 const create = async (req, res, next) => {
-    const { customer, status, details } = req.body;
+    const { customer, status, details, receivedMoney } = req.body;
 
     // Validate field
-    if (!customer) {
+    if (!customer || !receivedMoney) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
     }
 
@@ -76,22 +74,18 @@ const create = async (req, res, next) => {
             customerId = newCustomer._id;
         } catch (err) {
             console.log(err);
-            return res
-                .status(500)
-                .json({ success: false, status: 500, message: 'Internal server error' });
+            return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
         }
     }
 
     // Create order
     let newOrder;
     try {
-        newOrder = new Order({ customer: customerId, status: status || 'pending' });
+        newOrder = new Order({ customer: customerId, status: status || 'pending', receivedMoney });
         await newOrder.save();
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 
     // Create detail order
@@ -100,9 +94,7 @@ const create = async (req, res, next) => {
         newDetailOrders = await createDetail({ orderObject: newOrder, detailObjs: details });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 
     // Update totalprice in order
@@ -111,9 +103,10 @@ const create = async (req, res, next) => {
         newDetailOrders.forEach((newDetailOrder) => {
             totalPrice += newDetailOrder.toObject().totalPrice;
         });
+        let exchangeMoney = receivedMoney - totalPrice;
         const updatedOrder = await Order.findOneAndUpdate(
             { id: newOrder.toObject().id },
-            { totalPrice },
+            { totalPrice, exchangeMoney },
             {
                 new: true,
             }
@@ -137,9 +130,7 @@ const readOne = async (req, res, next) => {
         return res.status(200).json({ success: true, order });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -163,9 +154,7 @@ const update = async (req, res, next) => {
         return res.status(200).json({ success: true, order: newOrder });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
@@ -180,9 +169,7 @@ const destroy = async (req, res, next) => {
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);
-        return res
-            .status(500)
-            .json({ success: false, status: 500, message: 'Internal server error' });
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 

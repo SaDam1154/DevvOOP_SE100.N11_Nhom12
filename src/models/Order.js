@@ -16,6 +16,12 @@ const OrderSchema = new Schema(
         totalPrice: {
             type: Number,
         },
+        receivedMoney: {
+            type: Number,
+        },
+        exchangeMoney: {
+            type: Number,
+        },
         status: {
             type: String,
             enum: ['pending', 'delivered', 'aborted'],
