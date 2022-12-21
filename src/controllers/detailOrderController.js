@@ -20,6 +20,17 @@ const findByOrderId = async (req, res, next) => {
         let detailOrders;
         detailOrders = await DetailOrder.aggregate([
             {
+                $lookup: {
+                    from: 'products',
+                    localField: 'product',
+                    foreignField: '_id',
+                    as: 'product',
+                },
+            },
+            {
+                $unwind: '$product',
+            },
+            {
                 $match: {
                     order: mongoose.Types.ObjectId(id),
                 },

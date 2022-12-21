@@ -6,7 +6,21 @@ const Order = require('../models/Order');
 const read = async (req, res, next) => {
     try {
         let orders;
-        orders = await Order.aggregate([{ $match: req.filters }, { $sort: req.sorts }]);
+        orders = await Order.aggregate([
+            {
+                $lookup: {
+                    from: 'customers',
+                    localField: 'customer',
+                    foreignField: '_id',
+                    as: 'customer',
+                },
+            },
+            {
+                $unwind: '$customer',
+            },
+            { $match: req.filters },
+            { $sort: req.sorts },
+        ]);
         return res.status(200).json({ success: true, orders });
     } catch (err) {
         console.log(err);
@@ -126,7 +140,7 @@ const readOne = async (req, res, next) => {
     const id = req.params.id;
     try {
         let order;
-        order = await Order.findOne({ id });
+        order = await Order.findOne({ id }).populate('customer');
         return res.status(200).json({ success: true, order });
     } catch (err) {
         console.log(err);
