@@ -16,19 +16,54 @@ const read = async (req, res, next) => {
 
 // [POST] api/role
 const create = async (req, res, next) => {
-    const { name, description } = req.body;
+    const { name, description, functions } = req.body;
     // Validate field
     if (!name) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
     }
 
     try {
-        const newRole = new Role({
+        const role = new Role({
             name,
             description,
         });
-        await newRole.save();
-        return res.status(201).json({ success: true, role: newRole });
+        await role.save();
+
+        // Have functions --> update permission
+        let createPermissionPromises = undefined;
+        if (functions) {
+            createPermissionPromises = functions.map(
+                (funcId) =>
+                    new Promise(async (resolve, reject) => {
+                        try {
+                            const newPermission = new Permission({
+                                role: role.toObject()._id,
+                                function: funcId,
+                            });
+                            await newPermission.save();
+                            resolve(newPermission);
+                        } catch (error) {
+                            console.log(error);
+                            reject();
+                        }
+                    })
+            );
+        }
+        if (createPermissionPromises) {
+            await Promise.all(createPermissionPromises);
+        }
+
+        // Get function
+        let permissions;
+        permissions = await Permission.find({ role: role.toObject()._id }).populate('function');
+
+        let funcs;
+        funcs =
+            permissions?.map((permission) => {
+                return permission.toObject().function;
+            }) || null;
+
+        return res.status(201).json({ success: true, role: { ...role.toObject(), functions: funcs } });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
@@ -44,7 +79,7 @@ const readOne = async (req, res, next) => {
 
         // Get function
         let permissions;
-        permissions = await Permission.find({ role }).populate('function');
+        permissions = await Permission.find({ role: role.toObject()._id }).populate('function');
 
         const functions = permissions.map((permission) => {
             return permission.toObject().function;
@@ -60,21 +95,60 @@ const readOne = async (req, res, next) => {
 // [PUT] api/role/:id
 const update = async (req, res, next) => {
     const id = Number(req.params.id);
-    const bodyObj = req.body;
-    const updateObj = {};
+    const { name, description, functions } = req.body;
 
-    Object.keys(bodyObj).forEach((key) => {
-        if (bodyObj[key] !== undefined) {
-            updateObj[key] = bodyObj[key];
-        }
-    });
+    const updateObj = {};
+    if (name) {
+        updateObj.name = name;
+    }
+    if (description) {
+        updateObj.description = description;
+    }
 
     // Update role
     try {
-        const newRole = await Role.findOneAndUpdate({ id }, updateObj, {
+        const role = await Role.findOneAndUpdate({ id }, updateObj, {
             new: true,
         });
-        return res.status(200).json({ success: true, role: newRole });
+
+        // Have functions --> update permission
+        let createPermissionPromises = undefined;
+        if (functions) {
+            // Delete old permission
+            await Permission.deleteMany({ role: role.toObject()._id });
+
+            createPermissionPromises = functions.map(
+                (funcId) =>
+                    new Promise(async (resolve, reject) => {
+                        try {
+                            const newPermission = new Permission({
+                                role: role.toObject()._id,
+                                function: funcId,
+                            });
+                            await newPermission.save();
+                            resolve(newPermission);
+                        } catch (error) {
+                            console.log(error);
+                            reject();
+                        }
+                    })
+            );
+        }
+        if (createPermissionPromises) {
+            await Promise.all(createPermissionPromises);
+        }
+
+        // Get function
+        let permissions;
+        permissions = await Permission.find({ role: role.toObject()._id }).populate('function');
+
+        let funcs;
+        funcs =
+            permissions?.map((permission) => {
+                return permission.toObject().function;
+            }) || null;
+
+        return res.status(200).json({ success: true, role: { ...role.toObject(), functions: funcs } });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
