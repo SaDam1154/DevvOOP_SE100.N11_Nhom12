@@ -24,7 +24,7 @@ const create = async (req, res, next) => {
     try {
         // check exist account
         let account;
-        account = await Account.findOne({ id });
+        account = await Account.findOne({ username });
         if (account) {
             return res.status(401).json({ success: false, status: 401, message: 'username already exists' });
         }
@@ -63,6 +63,15 @@ const update = async (req, res, next) => {
     const id = Number(req.params.id);
     const bodyObj = req.body;
     const updateObj = {};
+
+    try {
+        if (bodyObj.password) {
+            bodyObj.password = await argon2.hash(bodyObj.password);
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+    }
 
     Object.keys(bodyObj).forEach((key) => {
         if (bodyObj[key] !== undefined) {
