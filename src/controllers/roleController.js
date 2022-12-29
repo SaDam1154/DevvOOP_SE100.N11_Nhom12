@@ -1,4 +1,6 @@
 const Role = require('../models/Role');
+const Permission = require('../models/Permission');
+const Function = require('../models/Function');
 
 // [GET] api/role
 const read = async (req, res, next) => {
@@ -39,7 +41,16 @@ const readOne = async (req, res, next) => {
     try {
         let role;
         role = await Role.findOne({ id });
-        return res.status(200).json({ success: true, role });
+
+        // Get function
+        let permissions;
+        permissions = await Permission.find({ role }).populate('function');
+
+        const functions = permissions.map((permission) => {
+            return permission.toObject().function;
+        });
+
+        return res.status(200).json({ success: true, role: { ...role.toObject(), functions } });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });

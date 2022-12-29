@@ -8,6 +8,7 @@ const detailOrder = require('./detailOrder');
 const account = require('./account');
 const role = require('./role');
 const auth = require('./auth');
+const func = require('./function');
 
 router.use('/product', productRoute);
 router.use('/product-type', productTypeRoute);
@@ -17,5 +18,6 @@ router.use('/detail-order', detailOrder);
 router.use('/account', account);
 router.use('/role', role);
 router.use('/auth', auth);
+router.use('/function', func);
 
 module.exports = router;
