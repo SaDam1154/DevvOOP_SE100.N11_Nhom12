@@ -1,5 +1,6 @@
 const Account = require('../models/Account');
 const argon2 = require('argon2');
+const Permission = require('../models/Permission');
 
 // [POST] api/auth/login
 const login = async (req, res, next) => {
@@ -20,7 +21,17 @@ const login = async (req, res, next) => {
             return res.status(401).json({ success: false, status: 401, message: 'password incorrect' });
         }
 
-        return res.status(200).json({ success: true, account });
+        const role = account.toObject().role._id;
+
+        // Get function
+        let permissions;
+        permissions = await Permission.find({ role }).populate('function');
+
+        const functions = permissions.map((permission) => {
+            return permission.toObject().function;
+        });
+
+        return res.status(200).json({ success: true, account: { ...account.toObject(), functions } });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
