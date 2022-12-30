@@ -66,7 +66,7 @@ const updateProductQuantity = (detailObjs) => {
         const updatePromise = new Promise(async (resolve, reject) => {
             try {
                 const product = await Product.findById(detailObj.product);
-                const newQuanity = product.toObject().quantity - detailObj.quantity;
+                let newQuanity = product.toObject().quantity - detailObj.quantity;
                 if (newQuanity < 0) {
                     newQuanity = 0;
                 }
