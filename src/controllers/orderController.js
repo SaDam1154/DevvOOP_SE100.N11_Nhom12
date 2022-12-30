@@ -1,6 +1,7 @@
 const Customer = require('../models/Customer');
 const DetailOrder = require('../models/DetailOrder');
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 
 // [GET] api/order
 const read = async (req, res, next) => {
@@ -57,6 +58,42 @@ const createDetail = ({ orderObject, detailObjs }) => {
             .catch(() => reject());
     });
 };
+// Create detail
+const updateProductQuantity = (detailObjs) => {
+    const updateQuantityPromises = [];
+
+    detailObjs.forEach((detailObj) => {
+        const updatePromise = new Promise(async (resolve, reject) => {
+            try {
+                const product = await Product.findById(detailObj.product);
+                const newQuanity = product.toObject().quantity - detailObj.quantity;
+                if (newQuanity < 0) {
+                    newQuanity = 0;
+                }
+
+                const newProduct = await Product.findOneAndUpdate(
+                    { _id: detailObj.product },
+                    { quantity: newQuanity },
+                    {
+                        new: true,
+                    }
+                );
+                resolve(newProduct);
+            } catch (error) {
+                console.log(error);
+                reject();
+            }
+        });
+
+        updateQuantityPromises.push(updatePromise);
+    });
+
+    return new Promise((resolve, reject) => {
+        Promise.all(updateQuantityPromises)
+            .then((newProduct) => resolve(newProduct))
+            .catch(() => reject());
+    });
+};
 
 // [POST] api/order
 const create = async (req, res, next) => {
@@ -108,6 +145,14 @@ const create = async (req, res, next) => {
         newDetailOrders = await createDetail({ orderObject: newOrder, detailObjs: details });
     } catch (err) {
         console.log(err);
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+    }
+
+    // update quantity
+    try {
+        await updateProductQuantity(details);
+    } catch (error) {
+        console.log(error);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 
