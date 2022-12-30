@@ -64,7 +64,7 @@ const readOne = async (req, res, next) => {
     const id = req.params.id;
     try {
         let account;
-        account = await Account.findOne({ id });
+        account = await Account.findOne({ id }).populate('role');
         return res.status(200).json({ success: true, account });
     } catch (err) {
         console.log(err);
