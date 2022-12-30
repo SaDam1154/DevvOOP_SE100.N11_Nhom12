@@ -5,7 +5,21 @@ const argon2 = require('argon2');
 const read = async (req, res, next) => {
     try {
         let accounts;
-        accounts = await Account.aggregate([{ $match: req.filters }, { $sort: req.sorts }]);
+        accounts = await Account.aggregate([
+            {
+                $lookup: {
+                    from: 'roles',
+                    localField: 'role',
+                    foreignField: '_id',
+                    as: 'role',
+                },
+            },
+            {
+                $unwind: '$role',
+            },
+            { $match: req.filters },
+            { $sort: req.sorts },
+        ]);
         return res.status(200).json({ success: true, accounts });
     } catch (err) {
         console.log(err);
