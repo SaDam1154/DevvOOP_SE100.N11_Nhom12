@@ -22,6 +22,9 @@ const OrderSchema = new Schema(
         exchangeMoney: {
             type: Number,
         },
+        discount: {
+            type: Number,
+        },
         status: {
             type: String,
             enum: ['pending', 'delivered', 'aborted'],
