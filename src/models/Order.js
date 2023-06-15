@@ -13,6 +13,10 @@ const OrderSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'customers',
         },
+        createdBy: {
+            type: Schema.Types.ObjectId,
+            ref: 'users',
+        },
         totalPrice: {
             type: Number,
         },
@@ -25,9 +29,12 @@ const OrderSchema = new Schema(
         discount: {
             type: Number,
         },
+        tax: {
+            type: Number,
+        },
         status: {
             type: String,
-            enum: ['pending', 'delivered', 'aborted'],
+            enum: ['pending', 'processing', 'done', 'cancle'],
         },
     },
     {

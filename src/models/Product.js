@@ -16,9 +16,19 @@ const ProductSchema = new Schema(
         price: {
             type: Number,
         },
-        type: {
+        priceDiscount: {
+            type: Number,
+        },
+        isDiscounted: {
+            type: Boolean,
+        },
+        description: {
+            type: String,
+        },
+        category: {
             type: Schema.Types.ObjectId,
-            ref: 'product_types',
+            ref: 'categories',
+            required: true,
         },
         quantity: {
             type: Number,
