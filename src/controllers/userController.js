@@ -1,11 +1,11 @@
-const Account = require('../models/Account');
+const User = require('../models/User');
 const argon2 = require('argon2');
 
-// [GET] api/account
+// [GET] api/user
 const read = async (req, res, next) => {
     try {
-        let accounts;
-        accounts = await Account.aggregate([
+        let users;
+        users = await User.aggregate([
             {
                 $lookup: {
                     from: 'roles',
@@ -20,14 +20,14 @@ const read = async (req, res, next) => {
             { $match: req.filters },
             { $sort: req.sorts },
         ]);
-        return res.status(200).json({ success: true, accounts });
+        return res.status(200).json({ success: true, users });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
-// [POST] api/account
+// [POST] api/user
 const create = async (req, res, next) => {
     const { username, name, phone, address, password, role } = req.body;
     // Validate field
@@ -36,11 +36,11 @@ const create = async (req, res, next) => {
     }
 
     try {
-        // check exist account
-        let account;
-        account = await Account.findOne({ username });
-        if (account) {
-            return res.status(401).json({ success: false, status: 401, message: 'username already exists' });
+        // check exist user
+        let user;
+        user = await User.findOne({ email });
+        if (user) {
+            return res.status(401).json({ success: false, status: 401, message: 'email already exists' });
         }
 
         const hash = await argon2.hash(password);
@@ -51,29 +51,33 @@ const create = async (req, res, next) => {
             address,
             password: hash,
             role,
+            phone,
+            gender,
+            dateOfBirth,
+            urlAvt,
         });
-        await newAccount.save();
-        return res.status(201).json({ success: true, account: newAccount });
+        await newUser.save();
+        return res.status(201).json({ success: true, user: newUser });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
-// [GET] api/account/:id
+// [GET] api/user/:id
 const readOne = async (req, res, next) => {
     const id = req.params.id;
     try {
-        let account;
-        account = await Account.findOne({ id }).populate('role');
-        return res.status(200).json({ success: true, account });
+        let user;
+        user = await User.findOne({ id }).populate('role');
+        return res.status(200).json({ success: true, user });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
-// [PUT] api/account/:id
+// [PUT] api/user/:id
 const update = async (req, res, next) => {
     const id = Number(req.params.id);
     const bodyObj = req.body;
@@ -94,26 +98,26 @@ const update = async (req, res, next) => {
         }
     });
 
-    // Update account
+    // Update user
     try {
-        const newAccount = await Account.findOneAndUpdate({ id }, updateObj, {
+        const newUser = await User.findOneAndUpdate({ id }, updateObj, {
             new: true,
         });
-        return res.status(200).json({ success: true, account: newAccount });
+        return res.status(200).json({ success: true, user: newUser });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
     }
 };
 
-// [DELETE] api/account/:id
+// [DELETE] api/user/:id
 const destroy = async (req, res, next) => {
     if (!req.params.id) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed id' });
     }
 
     try {
-        await Account.delete({ id: req.params.id });
+        await User.delete({ id: req.params.id });
         return res.status(200).json({ success: true });
     } catch (err) {
         console.log(err);

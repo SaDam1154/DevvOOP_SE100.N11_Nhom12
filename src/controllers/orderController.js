@@ -97,7 +97,7 @@ const updateProductQuantity = (detailObjs) => {
 
 // [POST] api/order
 const create = async (req, res, next) => {
-    const { customer, status, details, receivedMoney, totalPrice, exchangeMoney, discount } = req.body;
+    const { customer, status, details, receivedMoney, totalPrice, exchangeMoney, discount, tax } = req.body;
 
     // Validate field
     if (status == 'pending') {
@@ -140,6 +140,7 @@ const create = async (req, res, next) => {
             totalPrice,
             exchangeMoney,
             discount,
+            tax,
         });
         await newOrder.save();
     } catch (err) {
