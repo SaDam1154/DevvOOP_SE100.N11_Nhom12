@@ -100,10 +100,11 @@ const create = async (req, res, next) => {
     const { customer, status, details, receivedMoney, totalPrice, exchangeMoney, discount } = req.body;
 
     // Validate field
-    if (!customer || !receivedMoney || !totalPrice || !exchangeMoney) {
-        return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
+    if (status == 'pending') {
+        if (!customer || !receivedMoney || !totalPrice || exchangeMoney < 0) {
+            return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
+        }
     }
-
     // Check and create customer
     const customerInDB = await Customer.findById(customer._id);
     let customerId;
@@ -113,7 +114,7 @@ const create = async (req, res, next) => {
     } else {
         //Don't have customer in db
         if (!customer.name || !customer.address || !customer.phone) {
-            return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
+            return res.status(400).json({ success: false, status: 400, message: 'Missed field customer' });
         }
         try {
             const newCustomer = new Customer({
@@ -189,6 +190,26 @@ const readOne = async (req, res, next) => {
     }
 };
 
+// [Post] api/order/:id
+const accept = async (req, res, next) => {
+    const id = Number(req.params.id);
+
+    // Update order
+    try {
+        const newOrder = await Order.findOneAndUpdate(
+            { id },
+            { status: 'pending' },
+            {
+                new: true,
+            }
+        );
+
+        return res.status(200).json({ success: true, order: newOrder });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, status: 500, message: 'Internal server error' });
+    }
+};
 // [PUT] api/order/:id
 const update = async (req, res, next) => {
     const id = Number(req.params.id);
@@ -228,4 +249,4 @@ const destroy = async (req, res, next) => {
     }
 };
 
-module.exports = { read, create, readOne, update, destroy };
+module.exports = { read, create, readOne, update, accept, destroy };

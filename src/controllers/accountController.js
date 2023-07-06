@@ -29,9 +29,9 @@ const read = async (req, res, next) => {
 
 // [POST] api/account
 const create = async (req, res, next) => {
-    const { username, name, email, password, role } = req.body;
+    const { username, name, phone, address, password, role } = req.body;
     // Validate field
-    if (!name || !username || !password || !role) {
+    if (!name || !username || !password || !role || !phone || !address) {
         return res.status(400).json({ success: false, status: 400, message: 'Missed field' });
     }
 
@@ -47,7 +47,8 @@ const create = async (req, res, next) => {
         const newAccount = new Account({
             username,
             name,
-            email,
+            phone,
+            address,
             password: hash,
             role,
         });

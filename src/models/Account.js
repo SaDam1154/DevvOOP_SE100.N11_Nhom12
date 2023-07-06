@@ -17,8 +17,13 @@ const AccountSchema = new Schema(
             type: String,
             required: true,
         },
-        email: {
+        phone: {
             type: String,
+            required: true,
+        },
+        address: {
+            type: String,
+            required: true,
         },
         password: {
             type: String,
